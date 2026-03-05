@@ -1,50 +1,16 @@
-﻿using InventoryHub.DTOs;
+﻿using AutoMapper;
+using InventoryHub.DTOs;
 using InventoryHub.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InventoryHub.Mapping
 {
-    //mejor usar automaper
-
-    // static class so it doesn't need to be instantiated
-    public static class ProductMapper
+    public class ProductMapper : Profile
     {
-        // convert Entity to DTO
-        public static ProductDTO ToDTO(ProductEntity entity)
+        public ProductMapper()
         {
-            if (entity == null) return null;
-
-            return new ProductDTO
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Price = entity.Price
-            };
+            CreateMap<ProductEntity, ProductDTO>();
+            CreateMap<ProductDTO, ProductEntity>();
         }
-
-        // convert DTO to Entity
-        public static ProductEntity ToEntity(ProductDTO dto)
-        {
-            if (dto == null) return null;
-
-            return new ProductEntity
-            {
-                Id = dto.Id,
-                Name = dto.Name,
-                Price = dto.Price
-            };
-        }
-
-        public static List<ProductDTO> ToDTOList(List<ProductEntity> productsEntity)
-        {
-            if (productsEntity == null) return null;
-            return productsEntity.Select(e => ToDTO(e)).ToList();
-        }
-
-        public static List<ProductEntity> ToEntityList(List<ProductDTO> productsDTO)
-        {
-            if (productsDTO == null) return null;
-            return productsDTO.Select(d => ToEntity(d)).ToList();
-        }
-
     }
 }

@@ -2,8 +2,11 @@
 using InventoryHub.Services;
 using Microsoft.AspNetCore.Mvc;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace InventoryHub.Controllers
 {
+    //[Authorize] //for a jwtBearer
     [ApiController]
     //[Route("api/[controller]")]
     [Route("api/products")]

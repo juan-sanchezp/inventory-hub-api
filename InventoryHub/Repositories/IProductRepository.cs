@@ -5,6 +5,7 @@ namespace InventoryHub.Repositories
 {
     public interface IProductRepository
     {
+
         List<ProductEntity> GetAll();
         ProductEntity GetById(int id);
         ProductEntity Add (ProductEntity productEntity);

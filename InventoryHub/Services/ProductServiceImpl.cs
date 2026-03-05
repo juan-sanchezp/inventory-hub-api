@@ -1,4 +1,5 @@
-﻿using InventoryHub.DTOs;
+﻿using AutoMapper;
+using InventoryHub.DTOs;
 using InventoryHub.Mapping;
 using InventoryHub.Models;
 using InventoryHub.Repositories;
@@ -10,20 +11,24 @@ namespace InventoryHub.Services
     {
 
         private readonly IProductRepository _productAccessBd;
+        private readonly IMapper _mapper;
 
-        public ProductServiceImpl(IProductRepository productAccessBd)
+        public ProductServiceImpl(IProductRepository productAccessBd, IMapper mapper)
         {
             _productAccessBd = productAccessBd;
+            _mapper = mapper;
         }
 
         List<ProductDTO> IProductService.GetAll()
         {
             List<ProductEntity> productsEntity = _productAccessBd.GetAll();
             Console.WriteLine("test consult ");
-            List<ProductDTO> productDTO = ProductMapper.ToDTOList(productsEntity);
+            List<ProductDTO> productDTO = _mapper.Map<List<ProductDTO>>(productsEntity);
             return productDTO;
+
         }
 
+        
         ProductDTO IProductService.DeleteById(int id)
         {
             throw new NotImplementedException();
@@ -37,9 +42,9 @@ namespace InventoryHub.Services
 
         ProductDTO IProductService.Save(ProductDTO productDTO)
         {
-            ProductEntity productEntity = ProductMapper.ToEntity(productDTO);
-            ProductEntity aux = _productAccessBd.Add(productEntity);
-            return ProductMapper.ToDTO(aux);        
+            ProductEntity productEntity = _mapper.Map<ProductEntity>(productDTO);
+            ProductEntity saved = _productAccessBd.Add(productEntity);
+            return _mapper.Map<ProductDTO>(saved);        
         }
 
         ProductDTO IProductService.Update(int id, ProductDTO productDTO)
