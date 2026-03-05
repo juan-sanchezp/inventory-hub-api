@@ -1,4 +1,5 @@
 ﻿using InventoryHub.Data;
+using InventoryHub.Mapping;
 using InventoryHub.Models;
 using System;
 
@@ -13,10 +14,19 @@ namespace InventoryHub.Repositories
         {
             _context = context;
         }
-        public ProductEntity Add(ProductEntity productEntity)
+        public ProductEntity? Add(ProductEntity productEntity)
         {
+            var existing = _context.Products
+                .FirstOrDefault(p => p.Name == productEntity.Name);
+
+            if (existing != null)
+            {
+                return null; // ya existe
+            }
+
             _context.Products.Add(productEntity);
             _context.SaveChanges();
+
             return productEntity;
         }
 

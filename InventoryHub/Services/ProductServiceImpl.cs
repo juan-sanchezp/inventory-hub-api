@@ -1,15 +1,12 @@
 ﻿using AutoMapper;
 using InventoryHub.DTOs;
-using InventoryHub.Mapping;
 using InventoryHub.Models;
 using InventoryHub.Repositories;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace InventoryHub.Services
 {
     public class ProductServiceImpl : IProductService
     {
-
         private readonly IProductRepository _productAccessBd;
         private readonly IMapper _mapper;
 
@@ -22,35 +19,58 @@ namespace InventoryHub.Services
         List<ProductDTO> IProductService.GetAll()
         {
             List<ProductEntity> productsEntity = _productAccessBd.GetAll();
-            Console.WriteLine("test consult ");
-            List<ProductDTO> productDTO = _mapper.Map<List<ProductDTO>>(productsEntity);
-            return productDTO;
+            Console.WriteLine("test consult");
 
+            return _mapper.Map<List<ProductDTO>>(productsEntity);
         }
-
-        
-        ProductDTO IProductService.DeleteById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
 
         ProductDTO IProductService.GetById(int id)
         {
-            throw new NotImplementedException();
+            ProductEntity product = _productAccessBd.GetById(id);
+
+            if (product == null)
+                return null;
+
+            return _mapper.Map<ProductDTO>(product);
         }
 
         ProductDTO IProductService.Save(ProductDTO productDTO)
         {
-            ProductEntity productEntity = _mapper.Map<ProductEntity>(productDTO);
-            ProductEntity saved = _productAccessBd.Add(productEntity);
-            return _mapper.Map<ProductDTO>(saved);        
+            ProductEntity entity = _mapper.Map<ProductEntity>(productDTO);
+
+            var saved = _productAccessBd.Add(entity);
+
+            if (saved == null)
+                return null;
+
+            return _mapper.Map<ProductDTO>(saved);
         }
 
         ProductDTO IProductService.Update(int id, ProductDTO productDTO)
         {
-            throw new NotImplementedException();
+            ProductEntity existingProduct = _productAccessBd.GetById(id);
+
+            if (existingProduct == null)
+                return null;
+
+            // Actualiza propiedades
+            _mapper.Map(productDTO, existingProduct);
+
+            ProductEntity updated = _productAccessBd.Update(existingProduct);
+
+            return _mapper.Map<ProductDTO>(updated);
+        }
+
+        ProductDTO IProductService.DeleteById(int id)
+        {
+            ProductEntity product = _productAccessBd.GetById(id);
+
+            if (product == null)
+                return null;
+
+            _productAccessBd.Delete(product);
+
+            return _mapper.Map<ProductDTO>(product);
         }
     }
 }
-
