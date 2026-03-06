@@ -1,5 +1,6 @@
 ﻿using InventoryHub.DTOs;
 using InventoryHub.Services;
+using InventoryHub.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
@@ -21,8 +22,11 @@ namespace InventoryHub.Controllers
         [HttpGet(Name = "GetAllProducts")]
         public IActionResult GetProducts()
         {
-            List<ProductDTO> productsDTO = _service.GetAll();
-            return Ok(productsDTO);
+            var products = _service.GetAll();
+
+            return Ok(
+                ResponseFactory.Success(products, "Products retrieved successfully")
+            );
         }
 
         // GET: api/products/5
@@ -32,26 +36,37 @@ namespace InventoryHub.Controllers
             var product = _service.GetById(id);
 
             if (product == null)
-                return NotFound();
+            {
+                return NotFound(
+                    ResponseFactory.Fail<ProductDTO>("Product not found")
+                );
+            }
 
-            return Ok(product);
+            return Ok(
+                ResponseFactory.Success(product, "Product retrieved successfully")
+            );
         }
 
         // POST: api/products
         [HttpPost(Name = "SaveProduct")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public IActionResult SaveProduct([FromBody] ProductDTO productDTO)
         {
             var product = _service.Save(productDTO);
 
             if (product == null)
             {
-                return Conflict("Product already exists");
+                return Conflict(
+                    ResponseFactory.Fail<ProductDTO>("Product already exists")
+                );
             }
 
             return CreatedAtRoute(
                 "GetProductById",
                 new { id = product.Id },
-                product
+                ResponseFactory.Success(product, "Product created successfully")
             );
         }
 
@@ -62,9 +77,15 @@ namespace InventoryHub.Controllers
             var updated = _service.Update(id, productDTO);
 
             if (updated == null)
-                return NotFound();
+            {
+                return NotFound(
+                    ResponseFactory.Fail<ProductDTO>("Product not found")
+                );
+            }
 
-            return Ok(updated);
+            return Ok(
+                ResponseFactory.Success(updated, "Product updated successfully")
+            );
         }
 
         // DELETE: api/products/5
@@ -74,9 +95,15 @@ namespace InventoryHub.Controllers
             var deleted = _service.DeleteById(id);
 
             if (deleted == null)
-                return NotFound();
+            {
+                return NotFound(
+                    ResponseFactory.Fail<ProductDTO>("Product not found")
+                );
+            }
 
-            return Ok(deleted);
+            return Ok(
+                ResponseFactory.Success(deleted, "Product deleted successfully")
+            );
         }
     }
 }
